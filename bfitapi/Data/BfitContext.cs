@@ -15,6 +15,8 @@ namespace bfitapi.Data
         }
         public DbSet<TypePlan> TypesPlans { get; set; }
         public DbSet<TypePayment> TypesPayments { get; set; }
+        public DbSet<Product> Products { get; set; }
+
         public BfitContext(DbContextOptions<BfitContext> contextOptions) : base(contextOptions)
         {
 

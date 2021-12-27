@@ -13,10 +13,10 @@ namespace bfitapi.Model
         [Column("ID_TIPO_PAGAMENTO")]
         [Key]
         public int Id { get; set; }
-
         [Column("DESCRICAO")]
-        [MaxLength(100, ErrorMessage = "Descrição ultrapassa o tamanho máximo.")]
-        [MinLength(3, ErrorMessage = "Descrição requer o mínimo de 3 caracteres.")]
+        [Required]
+        [MaxLength(100, ErrorMessage = "Description exceeds max characters.")]
+        [MinLength(3, ErrorMessage = "Description required min 3 characters.")]
         public string Description { get; set; }
 
         public override bool Equals(object obj)
@@ -26,6 +26,5 @@ namespace bfitapi.Model
             return this.Description.ToLower().Equals(typePayment.Description.ToLower()) &&
                 (!this.Id.Equals(typePayment.Id));
         }
-
     }
 }

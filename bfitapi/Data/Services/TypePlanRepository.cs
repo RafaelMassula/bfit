@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace bfitapi.Data.Services
 {
-    public class TypePlanRepository : ITypePlanRepository
+    public class TypePlanRepository : Services<TypePlan>, ITypePlanRepository
     {
         private readonly BfitContext _context;
 
@@ -17,19 +17,46 @@ namespace bfitapi.Data.Services
             _context = bfitContext;
         }
 
-        public Task<TypePlan> Create(TypePlan obj)
+        public async Task<TypePlan> Create(TypePlan typePlan)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await CheckExistenceOfRecord(typePlan);
+                _context.Add(typePlan);
+                await _context.SaveChangesAsync();
+
+                return await Get(typePlan.Id);
+            }
+            catch (DbUpdateException error)
+            {
+                throw new DbUpdateException(error.Message);
+            }
         }
 
-        public Task<TypePlan> Delete(int key)
+          public async Task<TypePlan> Delete(int key)
         {
-            throw new NotImplementedException();
+            var TypePlan = await Get(key);
+            try
+            {
+                _context.TypesPlans.Remove(TypePlan);
+                await _context.SaveChangesAsync();
+                return TypePlan;
+            }
+            catch (DbUpdateException error)
+            {
+                throw new DbUpdateException(error.Message);
+            }
         }
 
-        public Task<TypePlan> Get(int key)
+        public async Task<TypePlan> Get(int key)
         {
-            throw new NotImplementedException();
+            var typePlan = await _context.TypesPlans
+                .SingleOrDefaultAsync(typePlan => typePlan.Id == key);
+            if (typePlan == null)
+            {
+                throw new KeyNotFoundException("plan type not found.");
+            }
+            return typePlan;
         }
 
         public async Task<IEnumerable<TypePlan>> GetList()
@@ -39,9 +66,34 @@ namespace bfitapi.Data.Services
                 .ToListAsync();
         }
 
-        public Task<TypePlan> Update(TypePlan obj)
+        public async Task<TypePlan> Update(TypePlan typePlan)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await Get(typePlan.Id);
+                _context.ChangeTracker.Clear();
+                _context.TypesPlans.Update(typePlan);
+                await _context.SaveChangesAsync();
+                return typePlan;
+            }
+            catch (DbUpdateException error)
+            {
+                throw new DbUpdateException(error.Message);
+            }
         }
+
+        public override async Task CheckExistenceOfRecord(TypePlan typePlan)
+        {
+            var plansTypes = await GetList();
+
+            foreach (var planType in plansTypes)
+            {
+                if (planType.Equals(typePlan))
+                    throw new DbUpdateException("Plan type has already been registered.");
+            }
+            //procurar entender melhor sobre 
+            _context.ChangeTracker.Clear();
+        }
+
     }
 }

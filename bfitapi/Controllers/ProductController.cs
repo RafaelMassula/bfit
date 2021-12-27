@@ -1,5 +1,5 @@
-﻿using bfitapi.Data;
-using bfitapi.Data.IServices;
+﻿using bfitapi.Data.IServices;
+using bfitapi.Exceptions;
 using bfitapi.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,23 +12,21 @@ namespace bfitapi.Controllers
 {
     [Route("api/")]
     [ApiController]
-    public class TypePlanController : ControllerBase
+    public class ProductController : ControllerBase
     {
-        private readonly ITypePlanRepository _repository;
-
-        public TypePlanController(ITypePlanRepository repository)
+        private readonly IProductRepository _repository;
+        public ProductController(IProductRepository repository)
         {
             _repository = repository;
         }
-
-        [Route("typesPlans"), HttpPost]
-        public async Task<IActionResult> CreateTypePlan([FromBody] TypePlan typePlan)
+        [Route("products"), HttpPost]
+        public async Task<IActionResult> CreateProduct([FromBody] Product product)
         {
             if (!ModelState.IsValid)
-                return (IActionResult)Task.FromResult(typePlan);
+                return (IActionResult)Task.FromResult(product);
             try
             {
-                return Created("", await _repository.Create(typePlan));
+                return Created("", await _repository.Create(product));
             }
             catch (DbUpdateException error)
             {
@@ -36,8 +34,8 @@ namespace bfitapi.Controllers
             }
         }
 
-        [Route("typesPlans/{id}"), HttpDelete]
-        public async Task<IActionResult> DeleteTypePlan(int id)
+        [Route("products/{id}"), HttpDelete]
+        public async Task<IActionResult> DeleteProduct(int id)
         {
             try
             {
@@ -54,13 +52,13 @@ namespace bfitapi.Controllers
             }
         }
 
-        [Route("typesPlans/{id}"), HttpGet]
-        public async Task<IActionResult> GetTypesPaymentsForId(int id)
+        [Route("products/{id}"), HttpGet]
+        public async Task<IActionResult> GetProductsForId(int id)
         {
             try
             {
-                var typePlan = await _repository.Get(id);
-                return Ok(typePlan);
+                var product = await _repository.Get(id);
+                return Ok(product);
             }
             catch (KeyNotFoundException error)
             {
@@ -68,19 +66,19 @@ namespace bfitapi.Controllers
             }
         }
 
-        [Route("typesPlans"), HttpGet]
-        public async Task<IActionResult> GetTypesPlans()
+        [Route("products"), HttpGet]
+        public async Task<IActionResult> GetProducts()
         {
-            var typesPlans = await _repository.GetList();
-            return Ok(typesPlans);
+            var products = await _repository.GetList();
+            return Ok(products);
         }
 
-        [Route("typesPlans"), HttpPut]
-        public async Task<IActionResult> UpdateTypePlan([FromBody] TypePlan typePlan)
+        [Route("products"), HttpPut]
+        public async Task<IActionResult> UpdateTypePayment([FromBody] Product product)
         {
             try
             {
-                return Ok(await _repository.Update(typePlan));
+                return Ok(await _repository.Update(product));
             }
             catch (DbUpdateException error)
             {

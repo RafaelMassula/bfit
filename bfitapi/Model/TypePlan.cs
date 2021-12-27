@@ -14,6 +14,17 @@ namespace bfitapi.Model
         [Key]
         public int Id { get; set; }
         [Column("DESCRICAO")]
+        [Required]
+        [MaxLength(100, ErrorMessage = "Description exceeds max characters.")]
         public string Description { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            TypePlan typePlan = obj as TypePlan;
+
+            return this.Description.ToLower().Equals(typePlan.Description.ToLower()) &&
+                (!this.Id.Equals(typePlan.Id));
+
+        }
     }
 }

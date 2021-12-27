@@ -35,6 +35,7 @@ namespace bfitapi.Data.Services
         public async Task<TypePayment> Delete(int key)
         {
             var typePayment = await Get(key);
+
             try
             {
                 _context.TypesPayments.Remove(typePayment);
@@ -53,7 +54,7 @@ namespace bfitapi.Data.Services
                 .SingleOrDefaultAsync(typePayment => typePayment.Id == key);
             if (typepayment == null)
             {
-                throw new KeyNotFoundException("Tipo de pagamento não encontrado.");
+                throw new KeyNotFoundException("Payment type not found.");
             }
             return typepayment;
         }
@@ -69,7 +70,8 @@ namespace bfitapi.Data.Services
         {
             try
             {
-                await CheckExistenceOfRecord(typePayment);
+                await Get(typePayment.Id);
+                _context.ChangeTracker.Clear();
                 _context.TypesPayments.Update(typePayment);
                 await _context.SaveChangesAsync();
                 return typePayment;
@@ -79,16 +81,16 @@ namespace bfitapi.Data.Services
                 throw new DbUpdateException(error.Message);
             }
         }
+
         public override async Task CheckExistenceOfRecord(TypePayment typePayment)
         {
-            var typesPayments = await GetList();
+            var paymentsTypes = await GetList();
          
-                foreach (var typePay in typesPayments)
+                foreach (var paymentType in paymentsTypes)
                 {
-                    if (typePay.Equals(typePayment))
-                        throw new DbUpdateException("Registro já realizado.");
+                    if (paymentType.Equals(typePayment))
+                        throw new DbUpdateException("Payment type has already been registered.");
                 }
-            //procurar entender melhor sobre 
             _context.ChangeTracker.Clear();
         }
     }

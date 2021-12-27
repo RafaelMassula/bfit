@@ -47,6 +47,10 @@ namespace bfitapi.Controllers
             {
                 return BadRequest(error.Message);
             }
+            catch (KeyNotFoundException error)
+            {
+                return NotFound(error.Message);
+            }
         }
 
         [Route("typespayments/{id}"), HttpGet]
@@ -80,6 +84,10 @@ namespace bfitapi.Controllers
             catch (DbUpdateException error)
             {
                 return BadRequest(error.Message);
+            }
+            catch(KeyNotFoundException error)
+            {
+                return NotFound(error.Message);
             }
         }
     }
