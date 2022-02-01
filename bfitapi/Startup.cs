@@ -1,10 +1,11 @@
 using bfitapi.Data;
 using bfitapi.Data.IServices;
-using bfitapi.Data.Services;
+using bfitapi.Data.RepositoryServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,8 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace bfitapi
@@ -31,8 +34,15 @@ namespace bfitapi
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
-
+            services.AddControllers(options =>
+            {
+                options.OutputFormatters.RemoveType<SystemTextJsonOutputFormatter>();
+                options.OutputFormatters.Add(new SystemTextJsonOutputFormatter(new JsonSerializerOptions(JsonSerializerDefaults.Web)
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+                }));
+            });
             services.AddDbContext<BfitContext>(optionsAction =>
             optionsAction.UseSqlServer(
                Configuration.GetConnectionString("bfitConnection")));
@@ -47,10 +57,15 @@ namespace bfitapi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "bfitapi", Version = "v1" });
             });
-
+       
             services.AddScoped<ITypePlanRepository, TypePlanRepository>();
             services.AddScoped<ITypePaymentRepository, TypePaymentRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IPhotoRepository, PhotoRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IAddressRepository, AddressRepository>();
+            services.AddScoped<IIngredientRepository, IngredientsRepository>();
+            services.AddScoped<IProductIngredientRepository, ProductIngredientRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

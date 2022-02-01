@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace bfitapi.Model
 {
     [Table("TIPO_PAGAMENTO")]
-    public class TypePayment
+    public class PaymentType
     {
         [Column("ID_TIPO_PAGAMENTO")]
         [Key]
@@ -21,7 +21,7 @@ namespace bfitapi.Model
 
         public override bool Equals(object obj)
         {
-            TypePayment typePayment = obj as TypePayment;
+            PaymentType typePayment = obj as PaymentType;
 
             return this.Description.ToLower().Equals(typePayment.Description.ToLower()) &&
                 (!this.Id.Equals(typePayment.Id));

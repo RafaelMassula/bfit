@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace bfitapi.Data.IServices
 {
-    public interface ICrudRespository<T> where T : class
+    public interface ICrudRepository<T> where T : class
     {
         Task<T> Create(T obj);
         Task<T> Delete(int key);

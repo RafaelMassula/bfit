@@ -10,6 +10,15 @@ namespace bfitapi.Model
     [Table("PHOTOS")]
     public class Photo
     {
+        public Photo(byte[] bytes, string description, string contentType, string fileExtension, long size)
+        {
+            Bytes = bytes;
+            Description = description;
+            ContentType = contentType;
+            FileExtension = fileExtension;
+            Size = size;
+        }
+
         [Column("ID_PHOTOS")]
         [Key]
         public int Id { get; set; }
@@ -17,12 +26,15 @@ namespace bfitapi.Model
         public byte[] Bytes { get; set; }
         [Column("DESCRIPTION")]
         public string Description { get; set; }
+        [Column("CONTENT_TYPE")]
+        public string ContentType { get; set; }
         [Column("FILE_EXTENSION")]
         public string FileExtension { get; set; }
         [Column("SIZE")]
-        public decimal Size { get; set; }
+        public long Size { get; set; }
         [Column("PRODUCT_ID")]
-        [ForeignKey("PRODUCT_ID")]
-        public Product Product_Id { get; set; }
+        public int ProductId { get; set; }
+        [ForeignKey("ProductId")]
+        public Product Product { get; set; }
     }
 }

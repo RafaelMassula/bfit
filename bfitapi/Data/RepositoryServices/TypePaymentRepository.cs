@@ -1,4 +1,5 @@
 ﻿using bfitapi.Data.IServices;
+using bfitapi.Data.Services;
 using bfitapi.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -6,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace bfitapi.Data.Services
+namespace bfitapi.Data.RepositoryServices
 {
-    public class TypePaymentRepository : Services<TypePayment>, ITypePaymentRepository
+    public class TypePaymentRepository : Services<PaymentType>, ITypePaymentRepository
     {
         private readonly BfitContext _context;
 
@@ -16,7 +17,7 @@ namespace bfitapi.Data.Services
         {
             _context = context;
         }
-        public async Task<TypePayment> Create(TypePayment typePayment)
+        public async Task<PaymentType> Create(PaymentType typePayment)
         {
             try
             {
@@ -32,7 +33,7 @@ namespace bfitapi.Data.Services
             }
         }
 
-        public async Task<TypePayment> Delete(int key)
+        public async Task<PaymentType> Delete(int key)
         {
             var typePayment = await Get(key);
 
@@ -48,7 +49,7 @@ namespace bfitapi.Data.Services
             }
         }
 
-        public async Task<TypePayment> Get(int key)
+        public async Task<PaymentType> Get(int key)
         {
             var typepayment = await _context.TypesPayments
                 .SingleOrDefaultAsync(typePayment => typePayment.Id == key);
@@ -59,14 +60,14 @@ namespace bfitapi.Data.Services
             return typepayment;
         }
 
-        public async Task<IEnumerable<TypePayment>> GetList()
+        public async Task<IEnumerable<PaymentType>> GetList()
         {
             return await _context.TypesPayments
                 .OrderBy(typePayment => typePayment.Description)
                 .ToListAsync();
         }
 
-        public async Task<TypePayment> Update(TypePayment typePayment)
+        public async Task<PaymentType> Update(PaymentType typePayment)
         {
             try
             {
@@ -82,7 +83,7 @@ namespace bfitapi.Data.Services
             }
         }
 
-        public override async Task CheckExistenceOfRecord(TypePayment typePayment)
+        public override async Task CheckExistenceOfRecord(PaymentType typePayment)
         {
             var paymentsTypes = await GetList();
          

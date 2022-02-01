@@ -1,4 +1,5 @@
 ﻿using bfitapi.Data.IServices;
+using bfitapi.Data.Services;
 using bfitapi.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace bfitapi.Data.Services
+namespace bfitapi.Data.RepositoryServices
 {
     public class TypePlanRepository : Services<TypePlan>, ITypePlanRepository
     {

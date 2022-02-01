@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace bfitapi.Data.IServices
 {
-    public interface ITypePaymentRepository : ICrudRespository<TypePayment>
+    public interface ITypePaymentRepository : ICrudRepository<PaymentType>
     {
     }
 }

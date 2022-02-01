@@ -1,5 +1,4 @@
 ﻿using bfitapi.Data.IServices;
-using bfitapi.Exceptions;
 using bfitapi.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,46 +11,39 @@ namespace bfitapi.Controllers
 {
     [Route("api/")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class IngredientController : ControllerBase
     {
-        private readonly IProductRepository _repository;
-        public ProductController(IProductRepository repository)
+        private readonly IIngredientRepository _repository;
+        public IngredientController(IIngredientRepository repository)
         {
             _repository = repository;
         }
-        [Route("products"), HttpPost]
-        public async Task<IActionResult> CreateProduct([FromForm] Product product)
+        [Route("ingredients"), HttpPost]
+        public async Task<IActionResult> CreateIngredient([FromBody] Ingredient ingredient)
         {
             if (!ModelState.IsValid)
-                return (IActionResult)Task.FromResult(product);
+                return (IActionResult)Task.FromResult(ingredient);
             try
             {
-                return Created("", await _repository.Create(product));
+                await _repository.Create(ingredient);
+                return Created(nameof(GetIngredientForId), ingredient);
             }
             catch (DbUpdateException error)
             {
                 return BadRequest(error.Message);
             }
-            catch (ExtensionException error)
+            catch (ArgumentNullException error)
             {
                 return BadRequest(error.Message);
             }
-            catch(FileSizeLimitException error)
-            {
-                return BadRequest(error.Message);
-            }
-            catch(ArgumentNullException error)
-            {
-                return BadRequest(error.Message);
-            }
-            catch(Exception error)
+            catch (Exception error)
             {
                 return BadRequest(error.Message);
             }
         }
 
-        [Route("products/{id}"), HttpDelete]
-        public async Task<IActionResult> DeleteProduct(int id)
+        [Route("ingredients/{id}"), HttpDelete]
+        public async Task<IActionResult> DeleteIngredient(int id)
         {
             try
             {
@@ -68,13 +60,13 @@ namespace bfitapi.Controllers
             }
         }
 
-        [Route("products/{id}"), HttpGet]
-        public async Task<IActionResult> GetProductsForId(int id)
+        [Route("ingredients/{id}"), HttpGet]
+        public async Task<IActionResult> GetIngredientForId(int id)
         {
             try
             {
-                var product = await _repository.Get(id);
-                return Ok(product);
+                var ingredient = await _repository.Get(id);
+                return Ok(ingredient);
             }
             catch (KeyNotFoundException error)
             {
@@ -82,19 +74,19 @@ namespace bfitapi.Controllers
             }
         }
 
-        [Route("products"), HttpGet]
-        public async Task<IActionResult> GetProducts()
+        [Route("ingredients"), HttpGet]
+        public async Task<IActionResult> GetIngredients()
         {
-            var products = await _repository.GetList();
-            return Ok(products);
+            var ingredients = await _repository.GetList();
+            return Ok(ingredients);
         }
 
-        [Route("products"), HttpPut]
-        public async Task<IActionResult> UpdateTypePayment([FromBody] Product product)
+        [Route("ingredients"), HttpPut]
+        public async Task<IActionResult> UpdateTypePayment([FromBody] Ingredient ingredient)
         {
             try
             {
-                return Ok(await _repository.Update(product));
+                return Ok(await _repository.Update(ingredient));
             }
             catch (DbUpdateException error)
             {

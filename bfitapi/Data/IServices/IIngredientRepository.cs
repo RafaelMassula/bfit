@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace bfitapi.Data.IServices
 {
-    public interface ITypePlanRepository : ICrudRepository<TypePlan>
+    public interface IIngredientRepository : ICrudRepository<Ingredient>
     {
     }
 }

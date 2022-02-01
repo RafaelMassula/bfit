@@ -1,17 +1,23 @@
 ﻿using bfitapi.Data.IServices;
+using bfitapi.Data.Services;
 using bfitapi.Exceptions;
 using bfitapi.Model;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace bfitapi.Data.Services
+namespace bfitapi.Data.RepositoryServices
 {
     public class ProductRepository : Services<Product>, IProductRepository
     {
         private readonly BfitContext _context;
+
         public ProductRepository(BfitContext context)
         {
             _context = context;
@@ -20,10 +26,15 @@ namespace bfitapi.Data.Services
         {
             try
             {
-                await CheckExistenceOfRecord(product);
-                _context.Add(product);
+                Product newProduct = new(product.Description, product.Price, product.Size, product.ManufactoringDate);
+                await CheckExistenceOfRecord(newProduct);
+                if (product.Files?.Count > 0)
+                    newProduct.Photos = PhotoServices.GetPhotos(product.Files);
+                else
+                    throw new ArgumentNullException(nameof(product.Files), "Empty photo list.");
+                _context.Add(newProduct);
                 await _context.SaveChangesAsync();
-                return await Get(product.Id);
+                return await Get(newProduct.Id);
             }
             catch (DbUpdateException error)
             {
@@ -50,6 +61,7 @@ namespace bfitapi.Data.Services
         public async Task<Product> Get(int key)
         {
             var product = await _context.Products
+                .Include(product => product.Photos)
                 .SingleOrDefaultAsync(product => product.Id == key);
             if (product == null)
             {
@@ -67,9 +79,9 @@ namespace bfitapi.Data.Services
 
         public async Task<Product> Update(Product product)
         {
+            await Get(product.Id);
             try
             {
-                await Get(product.Id);
                 _context.ChangeTracker.Clear();
                 _context.Products.Update(product);
                 await _context.SaveChangesAsync();
@@ -80,7 +92,6 @@ namespace bfitapi.Data.Services
                 throw new DbUpdateException(error.Message);
             }
         }
-    
 
         public override async Task CheckExistenceOfRecord(Product product)
         {

@@ -1,6 +1,5 @@
 ﻿using bfitapi.Data.IServices;
 using bfitapi.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,31 +11,32 @@ namespace bfitapi.Controllers
 {
     [Route("api/")]
     [ApiController]
-    public class TypePaymentController : ControllerBase
+    public class AddressController: ControllerBase
     {
-        private readonly ITypePaymentRepository _repository;
-        public TypePaymentController(ITypePaymentRepository repository)
+        private readonly IAddressRepository _repository;
+        public AddressController(IAddressRepository repository)
         {
             _repository = repository;
         }
 
-        [Route("typespayments"), HttpPost]
-        public async Task<IActionResult> CreateTypePayment([FromBody] PaymentType typePayment)
+        [Route("addresses"), HttpPost]
+        public async Task<IActionResult> CreateAdress([FromBody] Address adress)
         {
             if (!ModelState.IsValid)
-                return (IActionResult)Task.FromResult(typePayment);
+                return (IActionResult)Task.FromResult(adress);
             try
             {
-                return Created("", await _repository.Create(typePayment));
+                await _repository.Create(adress);
+                return Created("", adress);
             }
-            catch (DbUpdateException error)
+            catch (Exception error)
             {
                 return BadRequest(error.Message);
             }
         }
 
-        [Route("typesPayments/{id}"), HttpDelete]
-        public async Task<IActionResult> DeleteTypePayment(int id)
+        [Route("addresses/{id}"), HttpDelete]
+        public async Task<IActionResult> DeleteAdress4(int id)
         {
             try
             {
@@ -53,13 +53,14 @@ namespace bfitapi.Controllers
             }
         }
 
-        [Route("typespayments/{id}"), HttpGet]
-        public async Task<IActionResult> GetTypesPaymentsForId(int id)
+
+        [Route("adress/{id}"), HttpGet]
+        public async Task<IActionResult> GetAdressForId(int id)
         {
             try
             {
-                var typePayment = await _repository.Get(id);
-                return Ok(typePayment);
+                var adress = await _repository.Get(id);
+                return Ok(adress);
             }
             catch (KeyNotFoundException error)
             {
@@ -67,25 +68,25 @@ namespace bfitapi.Controllers
             }
         }
 
-        [Route("typespayments"), HttpGet]
-        public async Task<IActionResult> GetTypesPayments()
+        [Route("addresses"), HttpGet]
+        public async Task<IActionResult> GetAddresses()
         {
-            var typesPayments = await _repository.GetList();
-            return Ok(typesPayments);
+            var addresses = await _repository.GetList();
+            return Ok(addresses);
         }
 
-        [Route("typespayments"), HttpPut]
-        public async Task<IActionResult> UpdateTypePayment([FromBody] PaymentType typePayment)
+        [Route("addresses"), HttpPut]
+        public async Task<IActionResult> UpdateAddresses([FromBody] Address address)
         {
             try
             {
-                return Ok(await _repository.Update(typePayment));
+                return Ok(await _repository.Update(address));
             }
             catch (DbUpdateException error)
             {
                 return BadRequest(error.Message);
             }
-            catch(KeyNotFoundException error)
+            catch (KeyNotFoundException error)
             {
                 return NotFound(error.Message);
             }

@@ -12,46 +12,41 @@ namespace bfitapi.Controllers
 {
     [Route("api/")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class CustomerController : ControllerBase
     {
-        private readonly IProductRepository _repository;
-        public ProductController(IProductRepository repository)
+        private readonly ICustomerRepository _repository;
+
+        public CustomerController(ICustomerRepository repository)
         {
             _repository = repository;
         }
-        [Route("products"), HttpPost]
-        public async Task<IActionResult> CreateProduct([FromForm] Product product)
+
+        [Route("customers"), HttpPost]
+        public async Task<IActionResult> CreateCustomer([FromBody] Customer customer)
         {
             if (!ModelState.IsValid)
-                return (IActionResult)Task.FromResult(product);
+                return (IActionResult)Task.FromResult(customer);
             try
             {
-                return Created("", await _repository.Create(product));
+                await _repository.Create(customer);
+                return Created("", customer);
             }
-            catch (DbUpdateException error)
+            catch (BirthDateException error)
             {
                 return BadRequest(error.Message);
             }
-            catch (ExtensionException error)
+            catch (CpfException error)
             {
                 return BadRequest(error.Message);
             }
-            catch(FileSizeLimitException error)
-            {
-                return BadRequest(error.Message);
-            }
-            catch(ArgumentNullException error)
-            {
-                return BadRequest(error.Message);
-            }
-            catch(Exception error)
+            catch (Exception error)
             {
                 return BadRequest(error.Message);
             }
         }
 
-        [Route("products/{id}"), HttpDelete]
-        public async Task<IActionResult> DeleteProduct(int id)
+        [Route("customers/{id}"), HttpDelete]
+        public async Task<IActionResult> DeleteCustomer(int id)
         {
             try
             {
@@ -68,13 +63,13 @@ namespace bfitapi.Controllers
             }
         }
 
-        [Route("products/{id}"), HttpGet]
-        public async Task<IActionResult> GetProductsForId(int id)
+        [Route("customers/{id}"), HttpGet]
+        public async Task<IActionResult> GetCustomerForId(int id)
         {
             try
             {
-                var product = await _repository.Get(id);
-                return Ok(product);
+                var customer = await _repository.Get(id);
+                return Ok(customer);
             }
             catch (KeyNotFoundException error)
             {
@@ -82,19 +77,19 @@ namespace bfitapi.Controllers
             }
         }
 
-        [Route("products"), HttpGet]
-        public async Task<IActionResult> GetProducts()
+        [Route("customers"), HttpGet]
+        public async Task<IActionResult> GetCustomers()
         {
-            var products = await _repository.GetList();
-            return Ok(products);
+            var customers = await _repository.GetList();
+            return Ok(customers);
         }
 
-        [Route("products"), HttpPut]
-        public async Task<IActionResult> UpdateTypePayment([FromBody] Product product)
+        [Route("customers"), HttpPut]
+        public async Task<IActionResult> UpdateCustomer([FromBody] Customer customer)
         {
             try
             {
-                return Ok(await _repository.Update(product));
+                return Ok(await _repository.Update(customer));
             }
             catch (DbUpdateException error)
             {
@@ -103,6 +98,14 @@ namespace bfitapi.Controllers
             catch (KeyNotFoundException error)
             {
                 return NotFound(error.Message);
+            }
+            catch (BirthDateException error)
+            {
+                return BadRequest(error.Message);
+            }
+            catch (CpfException error)
+            {
+                return BadRequest(error.Message);
             }
         }
     }
